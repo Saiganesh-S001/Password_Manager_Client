@@ -1,33 +1,49 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects';
-import { fetchRecordsRequest, fetchRecordsSuccess, fetchRecordsFailure, createRecordRequest, createRecordSuccess, createRecordFailure, updateRecordRequest, updateRecordSuccess, updateRecordFailure, deleteRecordRequest, deleteRecordSuccess, deleteRecordFailure } from '../slices/passwordRecordsSlice';
-import { PasswordRecord } from '../../../types';
+import { fetchRecordsRequest, fetchRecordsSuccess, fetchRecordsFailure, createRecordRequest, createRecordSuccess, createRecordFailure, updateRecordRequest, updateRecordSuccess, updateRecordFailure, deleteRecordRequest, deleteRecordSuccess, deleteRecordFailure,fetchRecordRequest,fetchRecordSuccess,fetchRecordFailure } from '../slices/passwordRecordsSlice';
+import { PasswordRecord, PasswordRecordFormData } from '../../../types';
 import apiClient from '../../client';
 import { PayloadAction } from '@reduxjs/toolkit';
 
+interface SearchFormInputs {
+    search_by_title?: string;
+    search_by_username?: string;
+    search_by_url?: string;
+}
 
-const fetchPasswordRecords = async (): Promise<PasswordRecord[]> => {
-    const response = await apiClient.get('/password-records');
+interface FetchRecordsResponse {
+    owner_records: PasswordRecord[];
+    shared_records: PasswordRecord[];
+}
+
+
+const fetchPasswordRecord = async (id: number): Promise<PasswordRecord> => {
+    const response = await apiClient.get(`/password_records/${id}`);
+    return response.data;
+}
+
+const fetchPasswordRecords = async (searchFormInputs: SearchFormInputs): Promise<FetchRecordsResponse> => {
+    const response = await apiClient.get('/password_records', { params: searchFormInputs });
     return response.data;
 }
 
 const createPasswordRecord = async (record: PasswordRecord): Promise<PasswordRecord> => {
-    const response = await apiClient.post('/password-records', record);
+    const response = await apiClient.post('/password_records', record);
     return response.data;
 }
 
-const updatePasswordRecord = async (record: PasswordRecord): Promise<PasswordRecord> => {
-    const response = await apiClient.put(`/password-records/${record.id}`, record);
+const updatePasswordRecord = async (record: PasswordRecordFormData): Promise<PasswordRecord> => {
+    const response = await apiClient.put(`/password_records/${record.id}`, record);
     return response.data;
 }
 
 const deletePasswordRecord = async (id: number): Promise<void> => {
-    await apiClient.delete(`/password-records/${id}`);
+    await apiClient.delete(`/password_records/${id}`);
 }
 
 
-function* fetchRecordsSaga(): Generator<any, void, PasswordRecord[]> {
+function* fetchRecordsSaga(action: PayloadAction<SearchFormInputs>): Generator<any, void, FetchRecordsResponse> {
     try {
-        const records = yield call(fetchPasswordRecords);
+        const records = yield call(fetchPasswordRecords, action.payload);
         yield put(fetchRecordsSuccess(records));
     } catch (error: any) {
         yield put(fetchRecordsFailure(error.message));
@@ -52,7 +68,7 @@ function* deleteRecordSaga(action: PayloadAction<number>): Generator<any, void, 
     }
 }
 
-function* updateRecordSaga(action: PayloadAction<PasswordRecord>): Generator<any, void, PasswordRecord> {
+function* updateRecordSaga(action: PayloadAction<PasswordRecordFormData>): Generator<any, void, PasswordRecord> {
     try {
         const updateResponse = yield call(updatePasswordRecord, action.payload);
         yield put(updateRecordSuccess(updateResponse));
@@ -61,11 +77,20 @@ function* updateRecordSaga(action: PayloadAction<PasswordRecord>): Generator<any
     }
 }
 
+function* fetchRecordSaga(action: PayloadAction<number>): Generator<any, void, PasswordRecord> {
+    try {
+        const record = yield call(fetchPasswordRecord, action.payload);
+        yield put(fetchRecordSuccess(record));
+    } catch (error: any) {
+        yield put(fetchRecordFailure(error.message));
+    }
+}   
 export function* watchPasswordRecordSaga(): Generator<any, void, void> {
     yield all([
         takeLatest(fetchRecordsRequest.type, fetchRecordsSaga),
         takeLatest(createRecordRequest.type, createRecordSaga),
         takeLatest(deleteRecordRequest.type, deleteRecordSaga),
         takeLatest(updateRecordRequest.type, updateRecordSaga),
+        takeLatest(fetchRecordRequest.type, fetchRecordSaga),
     ])
 }

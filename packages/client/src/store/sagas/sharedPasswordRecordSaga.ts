@@ -1,32 +1,33 @@
 import { call, put, takeLatest,all } from 'redux-saga/effects';
 import { fetchSharedWithMeRequest, fetchSharedWithMeSuccess, fetchSharedWithMeFailure, fetchSharedByMeRequest, fetchSharedByMeSuccess, fetchSharedByMeFailure, createSharedPasswordRecordRequest, createSharedPasswordRecordSuccess, createSharedPasswordRecordFailure, deleteSharedPasswordRecordRequest, deleteSharedPasswordRecordSuccess, deleteSharedPasswordRecordFailure } from '../slices/sharedPasswordRecordsSlice';
-import { SharedPasswordRecord } from '../../../types';
+import { SharedPasswordRecord, SharedPasswordRecordRequest, DeleteSharedPasswordRecordRequest } from '../../../types';
 import apiClient from '../../client';
 import { PayloadAction } from '@reduxjs/toolkit';
 
 const fetchSharedWithMe = async (): Promise<SharedPasswordRecord[]> => {
-    const response = await apiClient.get('/shared-password-records/shared-with-me');
+    const response = await apiClient.get('/shared_password_records/shared_with_me');
     return response.data;
 }
 
 const fetchSharedByMe = async (): Promise<SharedPasswordRecord[]> => {
-    const response = await apiClient.get('/shared-password-records/shared-by-me');
+    const response = await apiClient.get('/shared_password_records/shared_by_me');
     return response.data;
 }
 
-const createSharedPasswordRecord = async (record: SharedPasswordRecord): Promise<SharedPasswordRecord> => {
-    const response = await apiClient.post('/shared-password-records', record);
+const createSharedPasswordRecord = async (recordDetails: SharedPasswordRecordRequest): Promise<SharedPasswordRecord> => {
+    const response = await apiClient.post('/shared_password_records', recordDetails);
     return response.data;
 }
 
-const deleteSharedPasswordRecord = async (id: number): Promise<void> => {
-    await apiClient.delete(`/shared-password-records/${id}`);
+const deleteSharedPasswordRecord = async (recordDetails: DeleteSharedPasswordRecordRequest): Promise<void> => {
+    await apiClient.delete(`/shared_password_records`, { data: recordDetails });
 }
 
 
 function* fetchSharedWithMeSaga(): Generator<any, void, SharedPasswordRecord[]> {
     try {
         const sharedWithMe = yield call(fetchSharedWithMe);
+        console.log(sharedWithMe);
         yield put(fetchSharedWithMeSuccess(sharedWithMe));
     } catch (error: any) {
         yield put(fetchSharedWithMeFailure(error.message));
@@ -42,7 +43,7 @@ function* fetchSharedByMeSaga(): Generator<any, void, SharedPasswordRecord[]> {
     }
 }
 
-function* createSharedPasswordRecordSaga(action: PayloadAction<SharedPasswordRecord>): Generator<any, void, SharedPasswordRecord> {
+function* createSharedPasswordRecordSaga(action: PayloadAction<SharedPasswordRecordRequest>): Generator<any, void, SharedPasswordRecord> {
     try {
         const record = yield call(createSharedPasswordRecord, action.payload);
         yield put(createSharedPasswordRecordSuccess(record));
@@ -51,10 +52,10 @@ function* createSharedPasswordRecordSaga(action: PayloadAction<SharedPasswordRec
     }
 }
 
-function* deleteSharedPasswordRecordSaga(action: PayloadAction<number>): Generator<any, void, void> {
+function* deleteSharedPasswordRecordSaga(action: PayloadAction<DeleteSharedPasswordRecordRequest>): Generator<any, void, void> {
     try {
         yield call(deleteSharedPasswordRecord, action.payload);
-        yield put(deleteSharedPasswordRecordSuccess(action.payload));
+        yield put(deleteSharedPasswordRecordSuccess(action.payload.password_record_id));
     } catch (error: any) {
         yield put(deleteSharedPasswordRecordFailure(error.message));
     }

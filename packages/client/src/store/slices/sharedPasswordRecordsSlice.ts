@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SharedPasswordRecord } from '../../../types';
+import { DeleteSharedPasswordRecordRequest, SharedPasswordRecord, SharedPasswordRecordRequest } from '../../../types';
 
 interface SharedPasswordRecordsState {
     sharedWithMe: SharedPasswordRecord[];
@@ -43,7 +43,7 @@ const sharedPasswordRecordsSlice = createSlice({
             state.error = action.payload;
             state.isLoading = false;
         },
-        createSharedPasswordRecordRequest: (state) => {
+        createSharedPasswordRecordRequest: (state, action: PayloadAction<SharedPasswordRecordRequest>) => {
             state.isLoading = true;
             state.error = null;
         },
@@ -55,7 +55,7 @@ const sharedPasswordRecordsSlice = createSlice({
             state.error = action.payload;
             state.isLoading = false;
         },
-        deleteSharedPasswordRecordRequest: (state) => {
+        deleteSharedPasswordRecordRequest: (state, action: PayloadAction<DeleteSharedPasswordRecordRequest>) => {
             state.isLoading = true;
             state.error = null;
         },

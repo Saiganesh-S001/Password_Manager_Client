@@ -4,15 +4,22 @@ export interface PasswordRecord {
     username: string;
     password: string;
     url: string;
-    user_id: number;
+    user: User;
+}
+
+export interface PasswordRecordFormData {
+    id: number;
+    title: string;
+    username: string;
+    password: string;
+    url: string;
 }
   
 export interface SharedPasswordRecord {
     id: number;
-    password_record_id: number;
-    owner_id: number;
-    collaborator_id: number;
     password_record: PasswordRecord;
+    owner: User;
+    collaborator: User;
 }
   
 export interface User {
@@ -37,29 +44,26 @@ export interface LoginResponse {
     token: string;
 }
 
-export interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    error: string | null;
+export interface SharedPasswordRecordRequest {
+    email: string;
+    password_record_id?: number;
 }
 
-export interface PasswordRecordsState {
-    records: PasswordRecord[];
-    loading: boolean;
-    error: string | null;
-}
-  
-export interface SharedPasswordRecordsState {
-    sharedWithMe: SharedPasswordRecord[];
-    sharedByMe: SharedPasswordRecord[];
-    loading: boolean;
-    error: string | null;
+export interface DeleteSharedPasswordRecordRequest {
+    email: string;
+    password_record_id: number;
 }
 
-export interface RootState {
-    auth: AuthState;
-    passwordRecords: PasswordRecordsState;
-    sharedPasswordRecords: SharedPasswordRecordsState;
+export interface UpdateProfileRequest {
+    email: string;
+    display_name: string;
+    password: string;
+    current_password: string;
+    password_confirmation: string;
 }
 
+
+export interface FetchRecordsResponse {
+    owner_records: PasswordRecord[];
+    shared_records: PasswordRecord[];
+}

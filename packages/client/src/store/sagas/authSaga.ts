@@ -1,9 +1,10 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import apiClient from '../../client';
-import { loginRequest, loginSuccess, loginFailure, registerRequest, registerSuccess, registerFailure, logoutRequest, logoutSuccess, logoutFailure } from '../slices/authSlice';
-import { RegisterRequest} from '../../../types';
+import { loginRequest, loginSuccess, loginFailure, registerRequest, registerSuccess, registerFailure, logoutRequest, logoutSuccess, logoutFailure, updateProfileRequest, updateProfileSuccess, updateProfileFailure, deleteAccountRequest, deleteAccountSuccess, deleteAccountFailure } from '../slices/authSlice';
+import { RegisterRequest, UpdateProfileRequest, User} from '../../../types';
 import { LoginResponse } from '../../../types';
+import storage from 'redux-persist/lib/storage';
 
 const login = async (email: string, password: string): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });
@@ -15,8 +16,18 @@ const register = async (registerRequest: RegisterRequest): Promise<LoginResponse
     return response.data;
 }
 
+const updateProfile = async (updateProfileRequest: UpdateProfileRequest): Promise<{user: User}> => {
+    const response = await apiClient.put('/auth/update', updateProfileRequest);
+    return response.data;
+}
+
 const logout = async (): Promise<void> => {
     const response = await apiClient.post('/auth/logout');
+    return response.data;
+}
+
+const deleteAccount = async (): Promise<void> => {
+    const response = await apiClient.delete('/auth/delete');
     return response.data;
 }
 
@@ -43,9 +54,30 @@ function* registerSaga(action: PayloadAction<RegisterRequest>): Generator<any, v
 function* logoutSaga(): Generator<any, void, void> {
     try {
         yield call(logout);
+        localStorage.removeItem('token');
+        storage.removeItem('persist:root');
+        localStorage.removeItem('persist:root');
         yield put(logoutSuccess());
     } catch (error: any) {
         yield put(logoutFailure(error.message));
+    }
+}
+
+function* updateProfileSaga(action: PayloadAction<UpdateProfileRequest>): Generator<any, void, {user: User}> {  
+    try {
+        const updateProfileResponse = yield call(updateProfile, action.payload);
+        yield put(updateProfileSuccess(updateProfileResponse.user));
+    } catch (error: any) {
+        yield put(updateProfileFailure(error.message));
+    }
+}
+
+function* deleteAccountSaga(): Generator<any, void, void> {
+    try {
+        yield call(deleteAccount);
+        yield put(deleteAccountSuccess());
+    } catch (error: any) {
+        yield put(deleteAccountFailure(error.message));
     }
 }
 
@@ -54,6 +86,8 @@ export function* watchAuthSaga(): Generator<any, void, void> {
         takeLatest(loginRequest.type, loginSaga),
         takeLatest(registerRequest.type, registerSaga),
         takeLatest(logoutRequest.type, logoutSaga),
+        takeLatest(updateProfileRequest.type, updateProfileSaga),
+        takeLatest(deleteAccountRequest.type, deleteAccountSaga),
     ]);
 }
 

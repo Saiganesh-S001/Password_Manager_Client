@@ -24,7 +24,7 @@ export const LoginPage: React.FC = () => {
       toast.success('Logged in successfully');
       setTimeout(() => {
         navigate('/');
-      }, 2000);
+      }, 1000);
     }
     else if (error) {
       toast.error('Login failed');
