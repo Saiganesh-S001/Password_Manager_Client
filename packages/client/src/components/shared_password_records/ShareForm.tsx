@@ -2,8 +2,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
-import { createSharedPasswordRecordRequest } from '../store/slices/sharedPasswordRecordsSlice';
+import { AppDispatch, RootState } from '../../store';
+import { createSharedPasswordRecordRequest } from '../../store/slices/sharedPasswordRecordsSlice';
 
 interface ShareFormInputs {
   email: string;

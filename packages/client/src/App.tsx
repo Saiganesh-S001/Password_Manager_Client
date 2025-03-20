@@ -3,19 +3,19 @@ import { RegisterPage } from './pages/RegisterPage';
 // import HomePage from './pages/HomePage';
 import './index.css';
 import { LoginPage } from './pages/LoginPage';
-import { PasswordRecordDetail } from './components/PasswordRecordDetail';
-import { PasswordRecordsIndex } from './components/PasswordRecordsIndex';
-import EditPasswordRecord from './components/EditPasswordRecord';
-import { PasswordRecordForm } from './components/PasswordRecordForm';
-import { Layout } from './components/Layout';
-import { EditProfile } from './components/EditUserProfile';
+import { PasswordRecordDetail } from './components/password_records/PasswordRecordDetail';
+import { PasswordRecordsIndex } from './components/password_records/PasswordRecordsIndex';
+import EditPasswordRecord from './components/password_records/EditPasswordRecord';
+import { PasswordRecordForm } from './components/password_records/PasswordRecordForm';
+import { Layout } from './components/layouts/Layout';
+import { EditProfile } from './components/user/EditUserProfile';
 import { useSelector } from 'react-redux';  
 import { RootState } from './store';
 import { useInactivityTimer } from './hooks/useInactivityTimer';
 function App() {
 
   const {isAuthenticated} = useSelector((state: RootState) => state.auth);
-  useInactivityTimer(isAuthenticated ? 300000 : 0);
+  const inactivityTimer = useInactivityTimer(isAuthenticated);
 
   return (
     <Router>

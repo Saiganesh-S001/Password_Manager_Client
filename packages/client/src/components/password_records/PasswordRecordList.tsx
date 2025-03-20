@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
-import { deleteRecordRequest, fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
+import { deleteRecordRequest, fetchRecordsRequest } from '../../store/slices/passwordRecordsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { AppDispatch } from '../store';
+import { RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { useNavigate } from 'react-router-dom';
 
 export const PasswordRecordList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const records = useSelector((state: RootState) => state.passwordRecords.records);
-  const sharedRecords = useSelector((state: RootState) => state.passwordRecords.sharedRecords);
+  //const sharedRecords = useSelector((state: RootState) => state.passwordRecords.sharedRecords);
 
   const navigate = useNavigate();
   const handleDelete = (id: number) => {

@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
+import { AppDispatch, RootState } from "../../store";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import { fetchRecordRequest, updateRecordRequest } from "../store/slices/passwordRecordsSlice";
+import { fetchRecordRequest, updateRecordRequest } from "../../store/slices/passwordRecordsSlice";
 import { Link } from "react-router-dom";
-import { PasswordRecordFormData } from "../../types";
+import { PasswordRecordFormData } from "../../../types";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

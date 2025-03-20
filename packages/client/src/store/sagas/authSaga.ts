@@ -31,7 +31,7 @@ const deleteAccount = async (): Promise<void> => {
     return response.data;
 }
 
-function* loginSaga(action: PayloadAction<{ email: string, password: string }>): Generator<any, void, LoginResponse> {
+export const loginSaga = function* (action: PayloadAction<{ email: string, password: string }>): Generator<any, void, LoginResponse> {
     try {
         const loginResponse = yield call(login, action.payload.email, action.payload.password);
         yield put(loginSuccess(loginResponse));
@@ -41,7 +41,7 @@ function* loginSaga(action: PayloadAction<{ email: string, password: string }>):
     }
 }
 
-function* registerSaga(action: PayloadAction<RegisterRequest>): Generator<any, void, LoginResponse> {
+export const registerSaga = function* (action: PayloadAction<RegisterRequest>): Generator<any, void, LoginResponse> {
     try {
         const registerResponse = yield call(register, action.payload);
         yield put(registerSuccess(registerResponse));
@@ -51,7 +51,7 @@ function* registerSaga(action: PayloadAction<RegisterRequest>): Generator<any, v
     }
 }
 
-function* logoutSaga(): Generator<any, void, void> {
+export const logoutSaga = function* (): Generator<any, void, void> {
     try {
         yield call(logout);
         localStorage.removeItem('token');
@@ -63,7 +63,7 @@ function* logoutSaga(): Generator<any, void, void> {
     }
 }
 
-function* updateProfileSaga(action: PayloadAction<UpdateProfileRequest>): Generator<any, void, {user: User}> {  
+export const updateProfileSaga = function* (action: PayloadAction<UpdateProfileRequest>): Generator<any, void, {user: User}> {  
     try {
         const updateProfileResponse = yield call(updateProfile, action.payload);
         yield put(updateProfileSuccess(updateProfileResponse.user));
@@ -72,7 +72,7 @@ function* updateProfileSaga(action: PayloadAction<UpdateProfileRequest>): Genera
     }
 }
 
-function* deleteAccountSaga(): Generator<any, void, void> {
+export const deleteAccountSaga = function* (): Generator<any, void, void> {
     try {
         yield call(deleteAccount);
         yield put(deleteAccountSuccess());

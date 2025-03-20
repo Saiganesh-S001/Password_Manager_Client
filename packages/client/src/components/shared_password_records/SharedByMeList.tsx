@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { fetchSharedByMeRequest,deleteSharedPasswordRecordRequest } from '../store/slices/sharedPasswordRecordsSlice';
+import { fetchSharedByMeRequest,deleteSharedPasswordRecordRequest } from '../../store/slices/sharedPasswordRecordsSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
+import { AppDispatch, RootState } from '../../store';
 
 interface SharedUser {
   id: number;

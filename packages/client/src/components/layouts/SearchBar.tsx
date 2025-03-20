@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
-import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
+import { AppDispatch } from '../../store';
+import { fetchRecordsRequest } from '../../store/slices/passwordRecordsSlice';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { debounce } from 'lodash';
 

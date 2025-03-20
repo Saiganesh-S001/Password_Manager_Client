@@ -2,11 +2,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
 import { useNavigate } from 'react-router-dom';
-import LogoutBtn from '../components/LogoutBtn';
+import LogoutBtn from '../components/user/LogoutBtn';
 import { useEffect } from 'react';
 import { fetchSharedByMeRequest } from '../store/slices/sharedPasswordRecordsSlice';
 import { fetchSharedWithMeRequest } from '../store/slices/sharedPasswordRecordsSlice';
-import { PasswordRecordsIndex } from '../components/PasswordRecordsIndex';
+import { PasswordRecordsIndex } from '../components/password_records/PasswordRecordsIndex';
 import { SharedRecordsPage } from './ShareRecordsPage';
 const HomePage = () => {
     const navigate = useNavigate();

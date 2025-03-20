@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import { RootState } from '../store';
-import { AppDispatch } from '../store';
-import { deleteAccountRequest, updateProfileRequest} from '../store/slices/authSlice';
+import { RootState } from '../../store';
+import { AppDispatch } from '../../store';
+import { deleteAccountRequest, updateProfileRequest} from '../../store/slices/authSlice';
 
 interface ProfileFormData {
   display_name: string;

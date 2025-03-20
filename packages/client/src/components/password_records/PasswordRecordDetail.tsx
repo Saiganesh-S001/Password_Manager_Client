@@ -2,14 +2,15 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { fetchRecordRequest } from '../store/slices/passwordRecordsSlice';
+import { RootState } from '../../store';
+import { fetchRecordRequest } from '../../store/slices/passwordRecordsSlice';
 export const PasswordRecordDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 //   const record = useSelector((state: RootState) => state.passwordRecords.records.find(r => r.id === Number(id)));
 
 //   const sharedRecord = useSelector((state: RootState) => state.passwordRecords.sharedRecords.find(r => r.id === Number(id)));
   const currentRecord = useSelector((state: RootState) => state.passwordRecords.currentRecord);
+  const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -48,10 +49,10 @@ export const PasswordRecordDetail: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="my-6 p-4 bg-white shadow-sm rounded-lg border border-gray-200 space-x-4">
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500" onClick={() => navigate(`/passwords/${id}/edit`)}>Edit this record</button>
-        <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500">Delete this record</button>
-        <button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500" onClick={() => navigate('/')}>Back to password list</button>
+      <div className="my-6 p-4 rounded-lg space-x-4">
+        {currentRecord?.user.id === user?.id && <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500" onClick={() => navigate(`/passwords/${id}/edit`)}>Edit this record</button>}
+        {currentRecord?.user.id === user?.id && <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-500">Delete this record</button>}
+         <button className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500" onClick={() => navigate('/')}>Back to password list</button>
       </div>
     </div>
   );

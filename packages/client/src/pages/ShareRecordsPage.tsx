@@ -1,7 +1,7 @@
 // packages/web/src/components/SharedPasswordRecords/SharedRecordsPage.tsx
 import React, { useEffect } from 'react';
-import { ShareForm } from '../components/ShareForm';
-import { SharedRecordsList } from '../components/SharedByMeList';
+import { ShareForm } from '../components/shared_password_records/ShareForm';
+import { SharedRecordsList } from '../components/shared_password_records/SharedByMeList';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';

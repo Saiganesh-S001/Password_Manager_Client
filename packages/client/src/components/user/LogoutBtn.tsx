@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutRequest } from '../store/slices/authSlice';
+import { logoutRequest } from '../../store/slices/authSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { RootState } from '../store';
+import { RootState } from '../../store';
 import { useEffect } from 'react';
 
 const LogoutBtn = () => {

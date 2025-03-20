@@ -24,17 +24,16 @@ const deleteSharedPasswordRecord = async (recordDetails: DeleteSharedPasswordRec
 }
 
 
-function* fetchSharedWithMeSaga(): Generator<any, void, SharedPasswordRecord[]> {
+export const fetchSharedWithMeSaga = function* (): Generator<any, void, SharedPasswordRecord[]> {
     try {
         const sharedWithMe = yield call(fetchSharedWithMe);
-        console.log(sharedWithMe);
         yield put(fetchSharedWithMeSuccess(sharedWithMe));
     } catch (error: any) {
         yield put(fetchSharedWithMeFailure(error.message));
     }
 }
 
-function* fetchSharedByMeSaga(): Generator<any, void, SharedPasswordRecord[]> {
+export const fetchSharedByMeSaga = function* (): Generator<any, void, SharedPasswordRecord[]> {
     try {
         const sharedByMe = yield call(fetchSharedByMe);
         yield put(fetchSharedByMeSuccess(sharedByMe));
@@ -43,7 +42,7 @@ function* fetchSharedByMeSaga(): Generator<any, void, SharedPasswordRecord[]> {
     }
 }
 
-function* createSharedPasswordRecordSaga(action: PayloadAction<SharedPasswordRecordRequest>): Generator<any, void, SharedPasswordRecord> {
+export const createSharedPasswordRecordSaga = function* (action: PayloadAction<SharedPasswordRecordRequest>): Generator<any, void, SharedPasswordRecord> {
     try {
         const record = yield call(createSharedPasswordRecord, action.payload);
         yield put(createSharedPasswordRecordSuccess(record));
@@ -52,7 +51,7 @@ function* createSharedPasswordRecordSaga(action: PayloadAction<SharedPasswordRec
     }
 }
 
-function* deleteSharedPasswordRecordSaga(action: PayloadAction<DeleteSharedPasswordRecordRequest>): Generator<any, void, void> {
+export const deleteSharedPasswordRecordSaga = function* (action: PayloadAction<DeleteSharedPasswordRecordRequest>): Generator<any, void, void> {
     try {
         yield call(deleteSharedPasswordRecord, action.payload);
         yield put(deleteSharedPasswordRecordSuccess(action.payload.password_record_id));
@@ -61,7 +60,7 @@ function* deleteSharedPasswordRecordSaga(action: PayloadAction<DeleteSharedPassw
     }
 }
 
-export function* watchSharedPasswordRecords() {
+export const watchSharedPasswordRecords = function* (): Generator<any, void, void> {
     yield all([ 
         takeLatest(fetchSharedWithMeRequest.type, fetchSharedWithMeSaga),
         takeLatest(fetchSharedByMeRequest.type, fetchSharedByMeSaga),

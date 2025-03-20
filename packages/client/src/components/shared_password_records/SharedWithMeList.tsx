@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { AppDispatch } from '../store';
+import { RootState } from '../../store';
+import { AppDispatch } from '../../store';
 import { useNavigate } from 'react-router-dom';
-import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
+import { fetchRecordsRequest } from '../../store/slices/passwordRecordsSlice';
 export const SharedWithMeList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const sharedRecords = useSelector((state: RootState) => state.passwordRecords.sharedRecords);

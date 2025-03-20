@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 // import { SearchBar } from './SearchBar';
 import { PasswordRecordList } from './PasswordRecordList';
-import { SharedWithMeList } from './SharedWithMeList';
-import { SharedRecordsPage } from '../pages/ShareRecordsPage';
+import { SharedWithMeList } from '../shared_password_records/SharedWithMeList';
+import { SharedRecordsPage } from '../../pages/ShareRecordsPage';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
+import { RootState } from '../../store';
+import { fetchRecordsRequest } from '../../store/slices/passwordRecordsSlice';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { AppDispatch } from '../../store';
 export const PasswordRecordsIndex: React.FC = () => {
   const {isAuthenticated} = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
@@ -21,7 +21,7 @@ export const PasswordRecordsIndex: React.FC = () => {
   useEffect(() => {
     dispatch(fetchRecordsRequest({}));
   }, [dispatch]);   
-  
+
   return (
     <div className="max-w-4xl w-full mx-auto p-5">
       <div className="flex justify-between items-center mb-5">

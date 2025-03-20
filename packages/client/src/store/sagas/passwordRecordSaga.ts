@@ -41,7 +41,7 @@ const deletePasswordRecord = async (id: number): Promise<void> => {
 }
 
 
-function* fetchRecordsSaga(action: PayloadAction<SearchFormInputs>): Generator<any, void, FetchRecordsResponse> {
+export const fetchRecordsSaga = function* (action: PayloadAction<SearchFormInputs>): Generator<any, void, FetchRecordsResponse> {
     try {
         const records = yield call(fetchPasswordRecords, action.payload);
         yield put(fetchRecordsSuccess(records));
@@ -50,7 +50,7 @@ function* fetchRecordsSaga(action: PayloadAction<SearchFormInputs>): Generator<a
     }
 }
 
-function* createRecordSaga(action: PayloadAction<PasswordRecord>): Generator<any, void, PasswordRecord> {
+export const createRecordSaga = function* (action: PayloadAction<PasswordRecord>): Generator<any, void, PasswordRecord> {
     try {
         const createResponse = yield call(createPasswordRecord, action.payload);
         yield put(createRecordSuccess(createResponse))
@@ -59,7 +59,7 @@ function* createRecordSaga(action: PayloadAction<PasswordRecord>): Generator<any
     }
 }
 
-function* deleteRecordSaga(action: PayloadAction<number>): Generator<any, void, void> {
+export const deleteRecordSaga = function* (action: PayloadAction<number>): Generator<any, void, void> {
     try {
         yield call(deletePasswordRecord, action.payload);
         yield put(deleteRecordSuccess(action.payload));
@@ -68,7 +68,7 @@ function* deleteRecordSaga(action: PayloadAction<number>): Generator<any, void, 
     }
 }
 
-function* updateRecordSaga(action: PayloadAction<PasswordRecordFormData>): Generator<any, void, PasswordRecord> {
+export const updateRecordSaga = function* (action: PayloadAction<PasswordRecordFormData>): Generator<any, void, PasswordRecord> {
     try {
         const updateResponse = yield call(updatePasswordRecord, action.payload);
         yield put(updateRecordSuccess(updateResponse));
@@ -77,7 +77,7 @@ function* updateRecordSaga(action: PayloadAction<PasswordRecordFormData>): Gener
     }
 }
 
-function* fetchRecordSaga(action: PayloadAction<number>): Generator<any, void, PasswordRecord> {
+export const fetchRecordSaga = function* (action: PayloadAction<number>): Generator<any, void, PasswordRecord> {
     try {
         const record = yield call(fetchPasswordRecord, action.payload);
         yield put(fetchRecordSuccess(record));
@@ -85,7 +85,7 @@ function* fetchRecordSaga(action: PayloadAction<number>): Generator<any, void, P
         yield put(fetchRecordFailure(error.message));
     }
 }   
-export function* watchPasswordRecordSaga(): Generator<any, void, void> {
+export const watchPasswordRecordSaga = function* (): Generator<any, void, void> {
     yield all([
         takeLatest(fetchRecordsRequest.type, fetchRecordsSaga),
         takeLatest(createRecordRequest.type, createRecordSaga),

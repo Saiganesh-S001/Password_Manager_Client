@@ -1,9 +1,9 @@
 // packages/web/src/components/PasswordRecordForm.tsx
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { createRecordRequest, updateRecordRequest } from '../store/slices/passwordRecordsSlice';
+import { createRecordRequest, updateRecordRequest } from '../../store/slices/passwordRecordsSlice';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store';
+import { AppDispatch } from '../../store';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';

@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 // import { useForm } from 'react-hook-form';
 // import { logoutRequest } from '../store/slices/authSlice';
 // import { fetchRecordsRequest } from '../store/slices/passwordRecordsSlice';
-import { RootState } from '../store';
+import { RootState } from '../../store';
 import { useSelector } from 'react-redux';
-import LogoutBtn from './LogoutBtn';
+import LogoutBtn from '../user/LogoutBtn';
 import { SearchBar } from './SearchBar';
 
 
