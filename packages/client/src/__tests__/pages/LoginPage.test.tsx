@@ -3,7 +3,6 @@ import { LoginPage } from '../../pages/LoginPage';
 import { renderWithProviders } from '../test-utils';
 import { loginRequest } from '../../store/slices/authSlice';
 
-// Mock react-toastify
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -117,10 +116,9 @@ describe('LoginPage', () => {
       expect(toast.success).toHaveBeenCalledWith('Logged in successfully');
     });
 
-    // Wait for navigation after toast
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/passwords');
-    }, { timeout: 1100 }); // slightly longer than setTimeout in component
+    }, { timeout: 1100 });
   });
 
   it('navigates to register page when signup link is clicked', () => {
