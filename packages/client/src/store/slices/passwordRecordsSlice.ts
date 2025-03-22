@@ -1,5 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PasswordRecord, PasswordRecordFormData, FetchRecordsResponse } from '../../../types';
+import {
+    PasswordRecord,
+    FetchRecordsResponse,
+    CreatePasswordRecordData,
+    UpdatePasswordRecordFormData
+} from '../../../types';
 
 interface PasswordRecordsState {
     records: PasswordRecord[];
@@ -52,7 +57,7 @@ const passwordRecordsSlice = createSlice({
             state.error = action.payload;
             state.isLoading = false;
         },
-        createRecordRequest: (state) => {
+        createRecordRequest: (state, action: PayloadAction<CreatePasswordRecordData>) => {
             state.isLoading = true;
             state.error = null;
         },
@@ -64,7 +69,7 @@ const passwordRecordsSlice = createSlice({
             state.error = action.payload;
             state.isLoading = false;
         },
-        updateRecordRequest: (state, action: PayloadAction<PasswordRecordFormData>) => {
+        updateRecordRequest: (state, action: PayloadAction<UpdatePasswordRecordFormData>) => {
             state.isLoading = true;
             state.error = null;
         },

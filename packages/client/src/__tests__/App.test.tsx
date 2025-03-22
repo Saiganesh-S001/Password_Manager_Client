@@ -1,141 +1,147 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { renderWithProviders } from './test-utils';
+import { renderWithProviders, renderWithRouterAndStore } from './test-utils';
 import App from '../App';
 import { useInactivityTimer } from '../hooks/useInactivityTimer';
 
-// Mock all child components
+/**
+ * Mock all child components to simplify testing and
+ * focus only on the App component's functionality
+ */
 jest.mock('../components/layouts/Layout', () => ({
   Layout: ({ children }: { children: React.ReactNode }) => <div data-testid="layout">{children}</div>,
 }));
 
 jest.mock('../pages/LoginPage', () => ({
-  LoginPage: () => <div>Login Page</div>,
+  LoginPage: () => <div data-testid="login-page">Login Page</div>,
 }));
 
 jest.mock('../pages/RegisterPage', () => ({
-  RegisterPage: () => <div>Register Page</div>,
+  RegisterPage: () => <div data-testid="register-page">Register Page</div>,
 }));
 
 jest.mock('../components/password_records/PasswordRecordsIndex', () => ({
-  PasswordRecordsIndex: () => <div>Password Records Index</div>,
+  PasswordRecordsIndex: () => <div data-testid="records-index">Password Records Index</div>,
 }));
 
 jest.mock('../components/password_records/PasswordRecordDetail', () => ({
-  PasswordRecordDetail: () => <div>Password Record Detail</div>,
+  PasswordRecordDetail: () => <div data-testid="record-detail">Password Record Detail</div>,
 }));
 
 jest.mock('../components/password_records/EditPasswordRecord', () => ({
   __esModule: true,
-  default: () => <div>Edit Password Record</div>,
+  default: () => <div data-testid="edit-record">Edit Password Record</div>,
 }));
 
 jest.mock('../components/password_records/PasswordRecordForm', () => ({
-  PasswordRecordForm: () => <div>Password Record Form</div>,
+  PasswordRecordForm: () => <div data-testid="record-form">Password Record Form</div>,
 }));
 
 jest.mock('../components/user/EditUserProfile', () => ({
-  EditProfile: () => <div>Edit Profile</div>,
+  EditProfile: () => <div data-testid="edit-profile">Edit Profile</div>,
 }));
 
 // Mock useInactivityTimer hook
 jest.mock('../hooks/useInactivityTimer');
 
-describe('App', () => {
+describe('App Component', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     (useInactivityTimer as jest.Mock).mockReturnValue(undefined);
   });
 
-  it('renders layout wrapper', () => {
-    renderWithProviders(<App />);
-    expect(screen.getByTestId('layout')).toBeInTheDocument();
-  });
+  describe('Layout and Authentication', () => {
+    it('renders the layout wrapper around all content', () => {
+      renderWithProviders(<App />);
+      expect(screen.getByTestId('layout')).toBeInTheDocument();
+    });
 
-  it('initializes inactivity timer when authenticated', () => {
-    renderWithProviders(<App />, {
-      preloadedState: {
-        auth: {
-          user: { id: 1, email: 'test@example.com', display_name: 'Test User' },
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
+    it('initializes inactivity timer when user is authenticated', () => {
+      renderWithProviders(<App />, {
+        preloadedState: {
+          auth: {
+            user: { id: 1, email: 'test@example.com', display_name: 'Test User' },
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          },
         },
-      },
+      });
+
+      expect(useInactivityTimer).toHaveBeenCalledWith(true);
     });
 
-    expect(useInactivityTimer).toHaveBeenCalledWith(true);
-  });
-
-  it('does not initialize inactivity timer when not authenticated', () => {
-    renderWithProviders(<App />, {
-      preloadedState: {
-        auth: {
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-          error: null,
+    it('does not initialize inactivity timer when user is not authenticated', () => {
+      renderWithProviders(<App />, {
+        preloadedState: {
+          auth: {
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          },
         },
-      },
-    });
+      });
 
-    expect(useInactivityTimer).toHaveBeenCalledWith(false);
+      expect(useInactivityTimer).toHaveBeenCalledWith(false);
+    });
   });
 
-  describe('routing', () => {
-    it('renders login page at /login', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/login'],
+  describe('Routing', () => {
+    it('renders login page at /login route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/login'
       });
-      expect(screen.getByText('Login Page')).toBeInTheDocument();
+      expect(screen.getByTestId('login-page')).toBeInTheDocument();
     });
 
-    it('renders register page at /register', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/register'],
+    it('renders register page at /register route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/register'
       });
-      expect(screen.getByText('Register Page')).toBeInTheDocument();
+      expect(screen.getByTestId('register-page')).toBeInTheDocument();
     });
 
-    it('renders password records index at root path', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/'],
+    it('renders password records index at root (/) path', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/'
       });
-      expect(screen.getByText('Password Records Index')).toBeInTheDocument();
+      expect(screen.getByTestId('records-index')).toBeInTheDocument();
     });
 
-    it('renders password records index at /passwords', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/passwords'],
+    it('renders password records index at /passwords route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/passwords'
       });
-      expect(screen.getByText('Password Records Index')).toBeInTheDocument();
+      expect(screen.getByTestId('records-index')).toBeInTheDocument();
     });
 
-    it('renders edit profile at /profile/edit', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/profile/edit'],
+    it('renders edit profile page at /profile/edit route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/profile/edit'
       });
-      expect(screen.getByText('Edit Profile')).toBeInTheDocument();
+      expect(screen.getByTestId('edit-profile')).toBeInTheDocument();
     });
 
-    it('renders new password form at /passwords/new', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/passwords/new'],
+    it('renders password record form at /passwords/new route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/passwords/new'
       });
-      expect(screen.getByText('Password Record Form')).toBeInTheDocument();
+      expect(screen.getByTestId('record-form')).toBeInTheDocument();
     });
 
-    it('renders password detail at /passwords/:id', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/passwords/1'],
+    it('renders password record detail at /passwords/:id route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/passwords/1'
       });
-      expect(screen.getByText('Password Record Detail')).toBeInTheDocument();
+      expect(screen.getByTestId('record-detail')).toBeInTheDocument();
     });
 
-    it('renders edit password record at /passwords/:id/edit', () => {
-      renderWithProviders(<App />, {
-        initialEntries: ['/passwords/1/edit'],
+    it('renders edit password record at /passwords/:id/edit route', () => {
+      renderWithRouterAndStore(<App />, {
+        route: '/passwords/1/edit'
       });
-      expect(screen.getByText('Edit Password Record')).toBeInTheDocument();
+      expect(screen.getByTestId('edit-record')).toBeInTheDocument();
     });
   });
 }); 

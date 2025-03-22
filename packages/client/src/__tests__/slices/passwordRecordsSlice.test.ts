@@ -124,7 +124,7 @@ describe('passwordRecordsSlice', () => {
 
   describe('createRecord', () => {
     it('should handle createRecordRequest', () => {
-      const actual = passwordRecordsReducer(initialState, createRecordRequest());
+      const actual = passwordRecordsReducer(initialState, createRecordRequest(mockRecord));
       expect(actual.isLoading).toBe(true);
       expect(actual.error).toBeNull();
     });

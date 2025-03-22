@@ -13,8 +13,7 @@ export const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginRequest>();
   const navigate = useNavigate();
-  const { isAuthenticated,isLoading, error } = useSelector((state: RootState) => state.auth);
-
+  const { isAuthenticated, isLoading, error } = useSelector((state: RootState) => state.auth);
   const onSubmit = (data: LoginRequest) => {
     dispatch(loginRequest(data));
   };
@@ -23,13 +22,13 @@ export const LoginPage: React.FC = () => {
     if (isAuthenticated) {
       toast.success('Logged in successfully');
       setTimeout(() => {
-        navigate('/');
+        navigate('/passwords');
       }, 1000);
     }
     else if (error) {
       toast.error('Login failed');
     }
-  }, [isAuthenticated, error]);
+  }, [isAuthenticated, error, navigate]);
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
@@ -37,8 +36,9 @@ export const LoginPage: React.FC = () => {
       <h2 className="text-4xl font-semibold text-center text-gray-800 mb-6">Log in</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
           <input
+            id="email"
             type="email"
             {...register('email', { required: 'Email is required' })}
             autoFocus
@@ -48,8 +48,9 @@ export const LoginPage: React.FC = () => {
           {errors.email && <p className="text-red-500">{errors.email.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
           <input
+            id="password"
             type="password"
             {...register('password', { required: 'Password is required' })}
             autoComplete="current-password"

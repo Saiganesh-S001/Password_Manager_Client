@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { fetchSharedByMeRequest,deleteSharedPasswordRecordRequest } from '../../store/slices/sharedPasswordRecordsSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface SharedUser {
   id: number;
@@ -13,8 +15,9 @@ interface SharedUser {
 }
 
 export const SharedRecordsList: React.FC = () => {
+
   const dispatch = useDispatch<AppDispatch>();
-  const { sharedByMe, isLoading } = useSelector((state: RootState) => state.sharedPasswordRecords);
+  const { sharedByMe, isLoading, error } = useSelector((state: RootState) => state.sharedPasswordRecords);
   
   useEffect(() => {
     dispatch(fetchSharedByMeRequest());
@@ -36,6 +39,12 @@ export const SharedRecordsList: React.FC = () => {
   const handleRemoveAccess = (collaboratorId: number, passwordRecordId: number) => {
     console.log(collaboratorId, passwordRecordId);
     dispatch(deleteSharedPasswordRecordRequest({ email: groupedByUser[collaboratorId].email, password_record_id: passwordRecordId }));
+    if (error) {
+      toast.error('Failed to revoke access');
+    }
+    else{
+      toast.success('Access revoked successfully');
+    }
   };
 
   const handleRevokeAllAccess = (collaboratorId: number) => {
@@ -43,6 +52,12 @@ export const SharedRecordsList: React.FC = () => {
     user.shared_records.forEach(record => {
       dispatch(deleteSharedPasswordRecordRequest({ email: user.email, password_record_id: record.id }));
     });
+    if (error) {
+      toast.error('Failed to revoke all access');
+    }
+    else{
+      toast.success('All access revoked successfully');
+    }
   };
 
   if (isLoading) {

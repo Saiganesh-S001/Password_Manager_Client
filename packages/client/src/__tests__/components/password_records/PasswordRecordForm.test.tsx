@@ -1,10 +1,9 @@
-import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
-import { renderWithProviders } from '../../test-utils';
+import {screen, fireEvent, waitFor, cleanup, act} from '@testing-library/react';
+import { renderWithProviders, renderWithRouterAndStore } from '../../test-utils';
 import { PasswordRecordForm } from '../../../components/password_records/PasswordRecordForm';
 import { createRecordRequest, updateRecordRequest } from '../../../store/slices/passwordRecordsSlice';
 import { toast } from 'react-toastify';
-
+import { BrowserRouter } from 'react-router-dom';
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
@@ -18,16 +17,22 @@ describe('PasswordRecordForm', () => {
     username: 'testuser',
     password: 'testpass',
     url: 'https://test.com',
+    user: {
+      id: 1,
+      email: 'test@example.com',
+      display_name: 'Test User',
+    },
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    cleanup()
   });
 
   it('renders create form by default', () => {
-    renderWithProviders(<PasswordRecordForm />);
+    renderWithRouterAndStore(<BrowserRouter><PasswordRecordForm /></BrowserRouter>);
 
-    expect(screen.getByText('Create Password Record')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create password record/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/title/i)).toHaveValue('');
     expect(screen.getByLabelText(/username/i)).toHaveValue('');
     expect(screen.getByLabelText(/password/i)).toHaveValue('');
@@ -62,7 +67,11 @@ describe('PasswordRecordForm', () => {
     jest.spyOn(require('react-router-dom'), 'useNavigate')
       .mockImplementation(() => mockNavigate);
 
-    const { store } = renderWithProviders(<PasswordRecordForm />);
+    const { store } = renderWithRouterAndStore(
+        <BrowserRouter>
+          <PasswordRecordForm />
+        </BrowserRouter>
+    );
 
     fireEvent.change(screen.getByLabelText(/title/i), {
       target: { value: mockRecord.title },
@@ -102,11 +111,13 @@ describe('PasswordRecordForm', () => {
     );
 
     const updatedTitle = 'Updated Title';
-    fireEvent.change(screen.getByLabelText(/title/i), {
-      target: { value: updatedTitle },
-    });
 
-    fireEvent.submit(screen.getByRole('button', { name: /update password record/i }));
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText(/title/i), {
+        target: { value: updatedTitle },
+      });
+      fireEvent.submit(screen.getByRole('button', { name: /update password record/i }));
+    });
 
     expect(store.getActions()).toContainEqual(
       updateRecordRequest({

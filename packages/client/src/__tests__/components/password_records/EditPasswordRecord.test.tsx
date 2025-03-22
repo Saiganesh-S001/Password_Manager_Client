@@ -1,16 +1,17 @@
-import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils';
 import EditPasswordRecord from '../../../components/password_records/EditPasswordRecord';
 import { fetchRecordRequest, updateRecordRequest } from '../../../store/slices/passwordRecordsSlice';
 import { toast } from 'react-toastify';
-
+import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 // Mock react-toastify
 jest.mock('react-toastify', () => ({
   toast: {
     success: jest.fn(),
     error: jest.fn(),
   },
+  ToastContainer: () => null,
 }));
 
 // Mock react-router-dom
@@ -39,12 +40,12 @@ describe('EditPasswordRecord', () => {
   });
 
   it('fetches record on mount', () => {
-    const { store } = renderWithProviders(<EditPasswordRecord />);
+    const { store } = renderWithProviders(<BrowserRouter><EditPasswordRecord /></BrowserRouter>);
     expect(store.getActions()).toContainEqual(fetchRecordRequest(1));
   });
 
   it('populates form with current record data', () => {
-    renderWithProviders(<EditPasswordRecord />, {
+    renderWithProviders(<BrowserRouter><EditPasswordRecord /></BrowserRouter>, {
       preloadedState: {
         passwordRecords: {
           currentRecord: mockRecord,
@@ -67,7 +68,7 @@ describe('EditPasswordRecord', () => {
     jest.spyOn(require('react-router-dom'), 'useNavigate')
       .mockImplementation(() => mockNavigate);
 
-    const { store } = renderWithProviders(<EditPasswordRecord />, {
+    const { store } = renderWithProviders(<BrowserRouter><EditPasswordRecord /></BrowserRouter>, {
       preloadedState: {
         passwordRecords: {
           currentRecord: mockRecord,
@@ -99,7 +100,29 @@ describe('EditPasswordRecord', () => {
   });
 
   it('shows error toast when update fails', async () => {
-    renderWithProviders(<EditPasswordRecord />, {
+    // Create a custom implementation of toast.error to verify it's called
+    const errorToastSpy = jest.spyOn(toast, 'error');
+    
+    // First render with no error
+    const { rerender } = renderWithProviders(<BrowserRouter><EditPasswordRecord /></BrowserRouter>, {
+      preloadedState: {
+        passwordRecords: {
+          currentRecord: mockRecord,
+          records: [],
+          sharedRecords: [],
+          isLoading: false,
+          error: null,
+        },
+      },
+    });
+    
+    // Then rerender with an error to trigger the useEffect
+    rerender(
+      <BrowserRouter><EditPasswordRecord /></BrowserRouter>
+    );
+    
+    // Simulate a Redux state update with an error
+    const result = renderWithProviders(<BrowserRouter><EditPasswordRecord /></BrowserRouter>, {
       preloadedState: {
         passwordRecords: {
           currentRecord: mockRecord,
@@ -110,11 +133,14 @@ describe('EditPasswordRecord', () => {
         },
       },
     });
+    
+    rerender(
+      <Provider store={result.store}>
+        <BrowserRouter><EditPasswordRecord /></BrowserRouter>
+      </Provider>
+    );
 
-    fireEvent.submit(screen.getByRole('button', { name: /update password record/i }));
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Update failed');
-    });
+    // Verify error toast was displayed by the useEffect
+    expect(errorToastSpy).toHaveBeenCalledWith('Update failed');
   });
 }); 

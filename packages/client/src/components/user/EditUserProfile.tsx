@@ -62,8 +62,9 @@ export const EditProfile: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Display Name</label>
+            <label htmlFor="display_name" className="block text-sm font-medium text-gray-700">Display Name</label>
             <input
+              id="display_name"
               {...register('display_name', { required: 'Display name is required' })}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
@@ -71,8 +72,9 @@ export const EditProfile: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
+              id="email"
               type="email"
               {...register('email', { 
                 required: 'Email is required',
@@ -87,9 +89,10 @@ export const EditProfile: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
             <i className="text-xs text-gray-500">(leave blank if you don't want to change it)</i>
             <input
+              id="password"
               type="password"
               {...register('password')}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -98,8 +101,9 @@ export const EditProfile: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Password Confirmation</label>
+            <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700">Password Confirmation</label>
             <input
+              id="password_confirmation"
               type="password"
               {...register('password_confirmation', {
                 validate: (value) =>  !password || password === value || 'Passwords do not match'
@@ -110,9 +114,10 @@ export const EditProfile: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Current Password</label>
+            <label htmlFor="current_password" className="block text-sm font-medium text-gray-700">Current Password</label>
             <i className="text-xs text-gray-500">(we need your current password to confirm your changes)</i>
             <input
+              id="current_password"
               type="password"
               {...register('current_password', { required: 'Current password is required' })}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"

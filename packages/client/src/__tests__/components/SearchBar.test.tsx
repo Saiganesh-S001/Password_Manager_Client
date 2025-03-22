@@ -1,29 +1,42 @@
-import React from 'react';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { SearchBar } from '../../components/layouts/SearchBar';
 import { renderWithProviders } from '../test-utils';
 import { fetchRecordsRequest } from '../../store/slices/passwordRecordsSlice';
-import * as router from 'react-router-dom';
+
+// Mock react-router-dom
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+  useSearchParams: () => [new URLSearchParams(), jest.fn()],
+  useLocation: () => ({
+    pathname: '/',
+    search: '',
+    hash: '',
+    state: null,
+    key: 'default',
+  }),
+}));
 
 // Mock lodash debounce to execute immediately in tests
 jest.mock('lodash', () => ({
   ...jest.requireActual('lodash'),
-  debounce: (fn: Function) => {
-    fn.cancel = jest.fn();
-    return fn;
+  debounce: (fn: (...args: any[]) => any) => {
+    const debouncedFn = fn as any;
+    debouncedFn.cancel = jest.fn();
+    return debouncedFn;
   },
 }));
 
 describe('SearchBar', () => {
-  const mockNavigate = jest.fn();
   const mockSetSearchParams = jest.fn();
-  const mockSearchParams = new URLSearchParams();
+  const mockNavigate = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(router, 'useNavigate').mockImplementation(() => mockNavigate);
-    jest.spyOn(router, 'useSearchParams').mockImplementation(() => [
-      mockSearchParams,
+    // Override the default mock implementations
+    jest.spyOn(require('react-router-dom'), 'useNavigate').mockImplementation(() => mockNavigate);
+    jest.spyOn(require('react-router-dom'), 'useSearchParams').mockImplementation(() => [
+      new URLSearchParams(),
       mockSetSearchParams,
     ]);
   });
@@ -43,7 +56,7 @@ describe('SearchBar', () => {
     searchParams.set('search_by_username', 'test user');
     searchParams.set('search_by_url', 'test.com');
 
-    jest.spyOn(router, 'useSearchParams').mockImplementation(() => [
+    jest.spyOn(require('react-router-dom'), 'useSearchParams').mockImplementation(() => [
       searchParams,
       mockSetSearchParams,
     ]);
@@ -128,7 +141,7 @@ describe('SearchBar', () => {
     const { rerender } = renderWithProviders(<SearchBar />);
 
     // Simulate location change
-    jest.spyOn(router, 'useLocation').mockImplementation(() => ({
+    jest.spyOn(require('react-router-dom'), 'useLocation').mockImplementation(() => ({
       pathname: '/new-path',
       search: '',
       hash: '',

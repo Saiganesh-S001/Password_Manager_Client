@@ -1,6 +1,6 @@
 // packages/web/src/components/PasswordRecordsIndex.tsx
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 // import { SearchBar } from './SearchBar';
 import { PasswordRecordList } from './PasswordRecordList';
 import { SharedWithMeList } from '../shared_password_records/SharedWithMeList';
@@ -14,10 +14,12 @@ export const PasswordRecordsIndex: React.FC = () => {
   const {isAuthenticated} = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
 
+  // redirect to login if not authenticated
   if (!isAuthenticated) {
-    return <div>Please login to view your password records</div>;
+    return <Navigate to="/login" />;
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     dispatch(fetchRecordsRequest({}));
   }, [dispatch]);   

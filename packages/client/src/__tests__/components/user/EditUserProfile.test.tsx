@@ -1,5 +1,4 @@
-import React from 'react';
-import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, act } from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils';
 import { EditProfile } from '../../../components/user/EditUserProfile';
 import { updateProfileRequest, deleteAccountRequest } from '../../../store/slices/authSlice';
@@ -100,26 +99,32 @@ describe('EditProfile', () => {
       display_name: 'Updated Name',
       email: 'updated@example.com',
       current_password: 'currentpass',
+      password: '',
+      password_confirmation: ''
     };
 
-    fireEvent.input(screen.getByLabelText(/display name/i), {
-      target: { value: updatedData.display_name },
+    await act(async () => {
+      fireEvent.input(screen.getByLabelText(/display name/i), {
+        target: { value: updatedData.display_name },
+      });
+      fireEvent.input(screen.getByLabelText(/email/i), {
+        target: { value: updatedData.email },
+      });
+      fireEvent.input(screen.getByLabelText(/current password/i), {
+        target: { value: updatedData.current_password },
+      });
+      fireEvent.submit(screen.getByRole('button', { name: /update/i }));
     });
-    fireEvent.input(screen.getByLabelText(/email/i), {
-      target: { value: updatedData.email },
-    });
-    fireEvent.input(screen.getByLabelText(/current password/i), {
-      target: { value: updatedData.current_password },
-    });
-
-    fireEvent.submit(screen.getByRole('button', { name: /update/i }));
 
     expect(store.getActions()).toContainEqual(updateProfileRequest(updatedData));
     expect(toast.success).toHaveBeenCalledWith('Profile updated successfully');
     expect(mockNavigate).toHaveBeenCalledWith('/passwords');
   });
 
-  it('shows error toast when update fails', () => {
+  it('shows error toast when update fails', async () => {
+    // Create a custom implementation of toast.error to verify it's called
+    const errorToastSpy = jest.spyOn(toast, 'error');
+    
     renderWithProviders(<EditProfile />, {
       preloadedState: {
         auth: {
@@ -131,15 +136,25 @@ describe('EditProfile', () => {
       },
     });
 
-    fireEvent.submit(screen.getByRole('button', { name: /update/i }));
-
-    expect(toast.error).toHaveBeenCalledWith('Update failed');
+    await act(async () => {
+    // Fill out the form to make it valid
+      fireEvent.input(screen.getByLabelText(/current password/i), {
+        target: { value: 'password' },
+      });
+      
+    // Submit the form
+      fireEvent.submit(screen.getByRole('button', { name: /update/i }));
+    });
+    
+    // Verify the error toast would be called with the error from state
+    expect(errorToastSpy).toHaveBeenCalledWith('Update failed');
   });
 
   it('handles account deletion with confirmation', () => {
     const { store } = renderWithProviders(<EditProfile />);
 
-    fireEvent.click(screen.getByText(/cancel my account/i));
+    const delete_btn = screen.getByRole('button', { name: /cancel my account/i });
+    fireEvent.click(delete_btn);
 
     expect(mockConfirm).toHaveBeenCalledWith(
       'Are you sure you want to delete your account? This action cannot be undone.'
