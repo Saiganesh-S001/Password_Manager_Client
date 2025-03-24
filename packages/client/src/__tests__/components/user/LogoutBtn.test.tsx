@@ -1,9 +1,9 @@
-import React from 'react';
-import { screen, fireEvent, act } from '@testing-library/react';
+import {screen, fireEvent, act, cleanup} from '@testing-library/react';
 import { renderWithProviders } from '../../test-utils';
 import LogoutBtn from '../../../components/user/LogoutBtn';
 import { logoutRequest } from '../../../store/slices/authSlice';
 import { toast } from 'react-toastify';
+import * as router from 'react-router-dom';
 
 // Mock react-toastify
 jest.mock('react-toastify', () => ({
@@ -14,14 +14,18 @@ jest.mock('react-toastify', () => ({
 }));
 
 describe('LogoutBtn', () => {
+  const mockNavigate = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    jest.spyOn(router, 'useNavigate').mockImplementation(() => mockNavigate);
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    cleanup();
   });
 
   it('dispatches logout request when clicked', () => {
@@ -42,11 +46,7 @@ describe('LogoutBtn', () => {
   });
 
   it('shows success toast and navigates after successful logout', () => {
-    const mockNavigate = jest.fn();
-    jest.spyOn(require('react-router-dom'), 'useNavigate')
-      .mockImplementation(() => mockNavigate);
-
-    const { rerender } = renderWithProviders(<LogoutBtn />, {
+    const { store } = renderWithProviders(<LogoutBtn />, {
       preloadedState: {
         auth: {
           user: null,
@@ -58,19 +58,8 @@ describe('LogoutBtn', () => {
     });
 
     // Simulate logout success
-    rerender(<LogoutBtn />);
     act(() => {
-      // Update auth state to simulate successful logout
-      renderWithProviders(<LogoutBtn />, {
-        preloadedState: {
-          auth: {
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: null,
-          },
-        },
-      });
+      store.dispatch({ type: 'auth/logoutSuccess' });
     });
 
     expect(toast.success).toHaveBeenCalledWith('Logged out successfully');
@@ -84,7 +73,7 @@ describe('LogoutBtn', () => {
   });
 
   it('renders logout button only when authenticated', () => {
-    const { rerender } = renderWithProviders(<LogoutBtn />, {
+    const {store} = renderWithProviders(<LogoutBtn />, {
       preloadedState: {
         auth: {
           user: null,
@@ -95,26 +84,36 @@ describe('LogoutBtn', () => {
       },
     });
 
-    expect(screen.getByText('Logout')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Logout/i })).toBeInTheDocument();
 
-    // Rerender with unauthenticated state
-    rerender(<LogoutBtn />);
+
+    act(() => {
+      store.dispatch({
+        type: 'auth/logoutSuccess',
+        // payload: {
+        //   user: null,
+        //   isAuthenticated: false,
+        //   isLoading: false,
+        //   error: null,
+        // },
+      });
+    });
+
+    // Check unauthenticated state
+    expect(screen.queryByRole('button', { name: /Logout/i })).not.toBeInTheDocument();
+  });
+
+  it('applies correct styling to logout button', () => {
     renderWithProviders(<LogoutBtn />, {
       preloadedState: {
         auth: {
           user: null,
-          isAuthenticated: false,
+          isAuthenticated: true,
           isLoading: false,
           error: null,
         },
       },
     });
-
-    expect(screen.getByText('Logout')).toBeInTheDocument();
-  });
-
-  it('applies correct styling to logout button', () => {
-    renderWithProviders(<LogoutBtn />);
     
     const button = screen.getByText('Logout');
     expect(button.parentElement).toHaveClass('flex', 'justify-end');

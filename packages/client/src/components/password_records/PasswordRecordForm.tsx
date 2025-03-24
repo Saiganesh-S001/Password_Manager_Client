@@ -42,8 +42,9 @@ export const PasswordRecordForm: React.FC<PasswordRecordFormProps> = ({ initialD
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
       <div>
         <h1 className='text-2xl font-bold'>{isEditMode ? 'Edit' : 'Create'} Password Record</h1>
-        <label className="block text-sm font-medium text-gray-700">Title</label>
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
         <input
+          id="title"
           {...register('title', { required: 'Title is required' })}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
@@ -51,8 +52,9 @@ export const PasswordRecordForm: React.FC<PasswordRecordFormProps> = ({ initialD
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Username</label>
+        <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
         <input
+          id="username"
           {...register('username', { required: 'Username is required' })}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />
@@ -60,8 +62,9 @@ export const PasswordRecordForm: React.FC<PasswordRecordFormProps> = ({ initialD
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Password</label>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
         <input
+          id="password"
           type="password"
           {...register('password', { required: 'Password is required' })}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -70,8 +73,9 @@ export const PasswordRecordForm: React.FC<PasswordRecordFormProps> = ({ initialD
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">URL</label>
+        <label htmlFor="url" className="block text-sm font-medium text-gray-700">URL</label>
         <input
+          id="url"
           {...register('url', { required: 'URL is required' })}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         />

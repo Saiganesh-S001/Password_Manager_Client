@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { createSharedPasswordRecordRequest } from '../../store/slices/sharedPasswordRecordsSlice';
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 interface ShareFormInputs {
   email: string;
@@ -14,6 +16,7 @@ export const ShareForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { records } = useSelector((state: RootState) => state.passwordRecords);
   const { register, handleSubmit, formState: { errors }, reset } = useForm<ShareFormInputs>();
+  const { error} = useSelector((state: RootState) => state.sharedPasswordRecords);
 
   const onSubmit = (data: ShareFormInputs) => {
     if (data.password_record_id) {
@@ -26,6 +29,18 @@ export const ShareForm: React.FC = () => {
         email: data.email,
       }));
     }
+
+    // if there are errors, toast the errors
+    if (errors.email || errors.password_record_id) {
+      toast.error('Please fill in all fields correctly');
+    }
+    else if (error) {
+      toast.error('Failed to share password record'+ error);
+    }
+    else{
+      toast.success('Password record shared successfully');
+    }
+
     reset();
   };
 

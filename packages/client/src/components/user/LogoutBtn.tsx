@@ -23,6 +23,10 @@ const LogoutBtn = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
     <div className='flex justify-end'>
       <button onClick={handleLogout}>Logout</button>

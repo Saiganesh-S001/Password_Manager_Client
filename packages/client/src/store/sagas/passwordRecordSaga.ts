@@ -1,6 +1,6 @@
 import { call, put, takeLatest, all } from 'redux-saga/effects';
 import { fetchRecordsRequest, fetchRecordsSuccess, fetchRecordsFailure, createRecordRequest, createRecordSuccess, createRecordFailure, updateRecordRequest, updateRecordSuccess, updateRecordFailure, deleteRecordRequest, deleteRecordSuccess, deleteRecordFailure,fetchRecordRequest,fetchRecordSuccess,fetchRecordFailure } from '../slices/passwordRecordsSlice';
-import { PasswordRecord, PasswordRecordFormData } from '../../../types';
+import { PasswordRecord, UpdatePasswordRecordFormData,CreatePasswordRecordData } from '../../../types';
 import apiClient from '../../client';
 import { PayloadAction } from '@reduxjs/toolkit';
 
@@ -26,12 +26,12 @@ const fetchPasswordRecords = async (searchFormInputs: SearchFormInputs): Promise
     return response.data;
 }
 
-const createPasswordRecord = async (record: PasswordRecord): Promise<PasswordRecord> => {
+const createPasswordRecord = async (record: CreatePasswordRecordData): Promise<PasswordRecord> => {
     const response = await apiClient.post('/password_records', record);
     return response.data;
 }
 
-const updatePasswordRecord = async (record: PasswordRecordFormData): Promise<PasswordRecord> => {
+const updatePasswordRecord = async (record: UpdatePasswordRecordFormData): Promise<PasswordRecord> => {
     const response = await apiClient.put(`/password_records/${record.id}`, record);
     return response.data;
 }
@@ -50,7 +50,7 @@ export const fetchRecordsSaga = function* (action: PayloadAction<SearchFormInput
     }
 }
 
-export const createRecordSaga = function* (action: PayloadAction<PasswordRecord>): Generator<any, void, PasswordRecord> {
+export const createRecordSaga = function* (action: PayloadAction<CreatePasswordRecordData>): Generator<any, void, PasswordRecord> {
     try {
         const createResponse = yield call(createPasswordRecord, action.payload);
         yield put(createRecordSuccess(createResponse))
@@ -68,7 +68,7 @@ export const deleteRecordSaga = function* (action: PayloadAction<number>): Gener
     }
 }
 
-export const updateRecordSaga = function* (action: PayloadAction<PasswordRecordFormData>): Generator<any, void, PasswordRecord> {
+export const updateRecordSaga = function* (action: PayloadAction<UpdatePasswordRecordFormData>): Generator<any, void, PasswordRecord> {
     try {
         const updateResponse = yield call(updatePasswordRecord, action.payload);
         yield put(updateRecordSuccess(updateResponse));

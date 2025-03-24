@@ -7,7 +7,14 @@ export interface PasswordRecord {
     user: User;
 }
 
-export interface PasswordRecordFormData {
+export interface CreatePasswordRecordData {
+    title: string;
+    username: string;
+    password: string;
+    url: string;
+}
+
+export interface UpdatePasswordRecordFormData {
     id: number;
     title: string;
     username: string;
@@ -55,11 +62,11 @@ export interface DeleteSharedPasswordRecordRequest {
 }
 
 export interface UpdateProfileRequest {
-    email: string;
-    display_name: string;
-    password: string;
-    current_password: string;
-    password_confirmation: string;
+    email?: string;
+    display_name?: string;
+    password?: string;
+    current_password?: string;
+    password_confirmation?: string;
 }
 
 
