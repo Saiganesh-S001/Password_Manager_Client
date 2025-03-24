@@ -167,4 +167,54 @@ test.describe('Password Records Management', () => {
     await expect(page.locator('text=Password is required')).toBeVisible();
     await expect(page.locator('text=URL is required')).toBeVisible();
   });
+
+  test('should allow searching for records by title, username, and url', async ({ page }) => {
+    // Create multiple records with different values
+    const record1 = {
+      title: `Test Record ${smallRandomString()}`,
+      username: `Test User ${smallRandomString()}`,
+      url: `https://example.com/${smallRandomString()}`,
+      password: `password${smallRandomString()}`
+    };
+
+    const record2 = {
+      title: `Test Record ${smallRandomString()}`,
+      username: `Test User ${smallRandomString()}`,
+      url: `https://example.com/${smallRandomString()}`,
+      password: `password${smallRandomString()}`
+    };
+
+    const record3 = {
+      title: `Test Record ${smallRandomString()}`,
+      username: `Test User ${smallRandomString()}`,
+      url: `https://example.com/${smallRandomString()}`,
+      password: `password${smallRandomString()}`
+    };
+
+    // Create all records
+    await createPasswordRecord(page, record1.title, record1.username, record1.password, record1.url);
+    await createPasswordRecord(page, record2.title, record2.username, record2.password, record2.url);
+    await createPasswordRecord(page, record3.title, record3.username, record3.password, record3.url);
+  
+    // Search for records by title, username, and url
+    await page.fill('input[placeholder="Search passwords..."]', record1.title);
+    await page.waitForTimeout(1000);
+    await expect(page.locator(`h3:has-text("${record1.title}")`)).toBeVisible();
+    await expect(page.locator(`h3:has-text("${record2.title}")`)).not.toBeVisible();
+    await expect(page.locator(`h3:has-text("${record3.title}")`)).not.toBeVisible();
+
+    // Clear search and search again by username
+    await page.fill('input[placeholder="Search passwords..."]', record1.username);
+    await page.waitForTimeout(1000);
+    await expect(page.locator(`h3:has-text("${record1.title}")`)).toBeVisible();
+    await expect(page.locator(`h3:has-text("${record2.title}")`)).not.toBeVisible();
+    await expect(page.locator(`h3:has-text("${record3.title}")`)).not.toBeVisible();
+
+    // Clear search and search again by url
+    await page.fill('input[placeholder="Search passwords..."]', record1.url);
+    await page.waitForTimeout(1000);
+    await expect(page.locator(`h3:has-text("${record1.title}")`)).toBeVisible();
+    await expect(page.locator(`h3:has-text("${record2.title}")`)).not.toBeVisible();
+    await expect(page.locator(`h3:has-text("${record3.title}")`)).not.toBeVisible();
+  });
 }); 
