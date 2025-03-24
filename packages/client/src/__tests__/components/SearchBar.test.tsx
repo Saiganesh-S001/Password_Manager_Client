@@ -41,20 +41,16 @@ describe('SearchBar', () => {
     ]);
   });
 
-  it('renders search inputs correctly', () => {
+  it('renders search input correctly', () => {
     renderWithProviders(<SearchBar />);
 
-    expect(screen.getByPlaceholderText('Title')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('URL')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Username')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search passwords...')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /clear/i })).toBeInTheDocument();
   });
 
   it('initializes form with URL search params', () => {
     const searchParams = new URLSearchParams();
-    searchParams.set('search_by_title', 'test title');
-    searchParams.set('search_by_username', 'test user');
-    searchParams.set('search_by_url', 'test.com');
+    searchParams.set('search_by_title', 'test value');
 
     jest.spyOn(require('react-router-dom'), 'useSearchParams').mockImplementation(() => [
       searchParams,
@@ -63,74 +59,72 @@ describe('SearchBar', () => {
 
     renderWithProviders(<SearchBar />);
 
-    expect(screen.getByPlaceholderText('Title')).toHaveValue('test title');
-    expect(screen.getByPlaceholderText('Username')).toHaveValue('test user');
-    expect(screen.getByPlaceholderText('URL')).toHaveValue('test.com');
+    expect(screen.getByPlaceholderText('Search passwords...')).toHaveValue('test value');
   });
 
   it('dispatches search action on input change after debounce', async () => {
     const { store } = renderWithProviders(<SearchBar />);
 
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'test title' },
+    fireEvent.change(screen.getByPlaceholderText('Search passwords...'), {
+      target: { value: 'test query' },
     });
 
     await waitFor(() => {
       expect(store.getActions()).toContainEqual(
         fetchRecordsRequest({
-          search_by_title: 'test title',
-          search_by_username: '',
-          search_by_url: '',
+          search_by_title: 'test query',
+          search_by_username: 'test query',
+          search_by_url: 'test query',
         })
       );
     });
 
     expect(mockSetSearchParams).toHaveBeenCalledWith(
-      expect.objectContaining(new URLSearchParams({ search_by_title: 'test title' }))
+      expect.objectContaining(new URLSearchParams({ 
+        search_by_title: 'test query',
+        search_by_username: 'test query',
+        search_by_url: 'test query'
+      }))
     );
   });
 
   it('updates URL search params when searching', async () => {
     renderWithProviders(<SearchBar />);
 
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'test title' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('URL'), {
-      target: { value: 'test.com' },
+    fireEvent.change(screen.getByPlaceholderText('Search passwords...'), {
+      target: { value: 'test query' },
     });
 
     await waitFor(() => {
       expect(mockSetSearchParams).toHaveBeenCalledWith(
         expect.objectContaining(
           new URLSearchParams({
-            search_by_title: 'test title',
-            search_by_url: 'test.com',
+            search_by_title: 'test query',
+            search_by_username: 'test query',
+            search_by_url: 'test query',
           })
         )
       );
     });
   });
 
-  it('clears search params and resets form on cancel', async () => {
+  it('clears search params and resets form on clear button click', async () => {
     const { store } = renderWithProviders(<SearchBar />);
 
     // First set some values
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'test title' },
+    fireEvent.change(screen.getByPlaceholderText('Search passwords...'), {
+      target: { value: 'test query' },
     });
 
-    // Click cancel button
-    fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
+    // Click clear button
+    fireEvent.click(screen.getByRole('button', { name: /clear/i }));
 
     await waitFor(() => {
       // Check if search params were cleared
       expect(mockSetSearchParams).toHaveBeenCalledWith(new URLSearchParams());
       
       // Check if form was reset
-      expect(screen.getByPlaceholderText('Title')).toHaveValue('');
-      expect(screen.getByPlaceholderText('URL')).toHaveValue('');
-      expect(screen.getByPlaceholderText('Username')).toHaveValue('');
+      expect(screen.getByPlaceholderText('Search passwords...')).toHaveValue('');
 
       // Check if fetch action was dispatched with empty params
       expect(store.getActions()).toContainEqual(fetchRecordsRequest({}));
@@ -156,45 +150,11 @@ describe('SearchBar', () => {
     });
   });
 
-  it('handles multiple search criteria simultaneously', async () => {
-    const { store } = renderWithProviders(<SearchBar />);
-
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'test title' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Username'), {
-      target: { value: 'test user' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('URL'), {
-      target: { value: 'test.com' },
-    });
-
-    await waitFor(() => {
-      expect(store.getActions()).toContainEqual(
-        fetchRecordsRequest({
-          search_by_title: 'test title',
-          search_by_username: 'test user',
-          search_by_url: 'test.com',
-        })
-      );
-
-      expect(mockSetSearchParams).toHaveBeenCalledWith(
-        expect.objectContaining(
-          new URLSearchParams({
-            search_by_title: 'test title',
-            search_by_username: 'test user',
-            search_by_url: 'test.com',
-          })
-        )
-      );
-    });
-  });
-
   it('cancels debounced search on unmount', () => {
     const { unmount } = renderWithProviders(<SearchBar />);
     
     // Trigger a search
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
+    fireEvent.change(screen.getByPlaceholderText('Search passwords...'), {
       target: { value: 'test' },
     });
 
